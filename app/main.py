@@ -3,6 +3,7 @@ from pathlib import Path
 import joblib
 import pandas as pd
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.schemas import LeadInput, LeadPrediction
 
@@ -21,6 +22,15 @@ app = FastAPI(
     title="Smart Lead Scoring API",
     version="1.0.0",
     description="Predict sales lead conversion probability using a lightweight ML model.",
+)
+
+# Local/demo CORS policy so the Flutter Web client can call the API.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost", "http://localhost:8000", "http://127.0.0.1", "http://127.0.0.1:8000"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
 )
 
 
