@@ -19,7 +19,11 @@ class SmartLeadScoringApp extends StatelessWidget {
     return MaterialApp(
       title: 'Smart Lead Scoring',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true, colorScheme: scheme, scaffoldBackgroundColor: const Color(0xFFF7F8FC)),
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: scheme,
+        scaffoldBackgroundColor: const Color(0xFFF7F8FC),
+      ),
       home: const LeadScoringPage(),
     );
   }
@@ -52,7 +56,8 @@ class LeadScoringPage extends StatefulWidget {
 class _LeadScoringPageState extends State<LeadScoringPage> {
   final _formKey = GlobalKey<FormState>();
   late final Map<String, TextEditingController> controllers = {
-    for (final field in leadFields) field.key: TextEditingController(text: field.initial),
+    for (final field in leadFields)
+      field.key: TextEditingController(text: field.initial),
   };
 
   Map<String, dynamic>? result;
@@ -87,7 +92,8 @@ class _LeadScoringPageState extends State<LeadScoringPage> {
 
     try {
       final body = {
-        for (final field in leadFields) field.key: int.parse(controllers[field.key]!.text),
+        for (final field in leadFields)
+          field.key: int.parse(controllers[field.key]!.text),
       };
       final response = await http
           .post(
@@ -107,7 +113,9 @@ class _LeadScoringPageState extends State<LeadScoringPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Could not reach the scoring API. Check that the API is running.'),
+          content: Text(
+            'Could not reach the scoring API. Check that the API is running.',
+          ),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -131,10 +139,21 @@ class _LeadScoringPageState extends State<LeadScoringPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Smart Lead Scoring', style: TextStyle(fontWeight: FontWeight.w700)),
+        title: const Text(
+          'Smart Lead Scoring',
+          style: TextStyle(fontWeight: FontWeight.w700),
+        ),
         actions: [
-          IconButton(onPressed: loadDemo, tooltip: 'Load demo lead', icon: const Icon(Icons.auto_awesome_outlined)),
-          IconButton(onPressed: clearForm, tooltip: 'Clear form', icon: const Icon(Icons.refresh_rounded)),
+          IconButton(
+            onPressed: loadDemo,
+            tooltip: 'Load demo lead',
+            icon: const Icon(Icons.auto_awesome_outlined),
+          ),
+          IconButton(
+            onPressed: clearForm,
+            tooltip: 'Clear form',
+            icon: const Icon(Icons.refresh_rounded),
+          ),
           const SizedBox(width: 8),
         ],
       ),
@@ -160,7 +179,13 @@ class _LeadScoringPageState extends State<LeadScoringPage> {
                         ],
                       );
                     }
-                    return Column(children: [_buildForm(), const SizedBox(height: 20), _buildResult()]);
+                    return Column(
+                      children: [
+                        _buildForm(),
+                        const SizedBox(height: 20),
+                        _buildResult(),
+                      ],
+                    );
                   },
                 ),
                 const SizedBox(height: 18),
@@ -183,27 +208,33 @@ class _LeadScoringPageState extends State<LeadScoringPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const _SectionTitle(icon: Icons.tune_rounded, title: 'Lead signals', subtitle: 'Tell us what you know about this prospect.'),
+              const _SectionTitle(
+                icon: Icons.tune_rounded,
+                title: 'Lead signals',
+                subtitle: 'Tell us what you know about this prospect.',
+              ),
               const SizedBox(height: 20),
-              ...leadFields.map((field) => Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: TextFormField(
-                      controller: controllers[field.key],
-                      keyboardType: TextInputType.number,
-                      textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(
-                        labelText: field.label,
-                        helperText: field.help,
-                        prefixIcon: const Icon(Icons.numbers_rounded),
-                      ),
-                      validator: (value) {
-                        final number = int.tryParse(value ?? '');
-                        if (number == null) return 'Enter a whole number';
-                        if (number < 0) return 'Value cannot be negative';
-                        return null;
-                      },
+              ...leadFields.map(
+                (field) => Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: TextFormField(
+                    controller: controllers[field.key],
+                    keyboardType: TextInputType.number,
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(
+                      labelText: field.label,
+                      helperText: field.help,
+                      prefixIcon: const Icon(Icons.numbers_rounded),
                     ),
-                  )),
+                    validator: (value) {
+                      final number = int.tryParse(value ?? '');
+                      if (number == null) return 'Enter a whole number';
+                      if (number < 0) return 'Value cannot be negative';
+                      return null;
+                    },
+                  ),
+                ),
+              ),
               const SizedBox(height: 4),
               SizedBox(
                 width: double.infinity,
@@ -211,7 +242,11 @@ class _LeadScoringPageState extends State<LeadScoringPage> {
                 child: FilledButton.icon(
                   onPressed: loading ? null : scoreLead,
                   icon: loading
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : const Icon(Icons.auto_graph_rounded),
                   label: Text(loading ? 'Analysing lead...' : 'Score this lead'),
                 ),
@@ -233,9 +268,15 @@ class _LeadScoringPageState extends State<LeadScoringPage> {
             children: const [
               Icon(Icons.insights_rounded, size: 52),
               SizedBox(height: 16),
-              Text('Your score will appear here', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+              Text(
+                'Your score will appear here',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+              ),
               SizedBox(height: 8),
-              Text('Submit the lead signals to get a conversion probability and sales priority.', textAlign: TextAlign.center),
+              Text(
+                'Submit the lead signals to get a conversion probability and sales priority.',
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),
@@ -254,7 +295,11 @@ class _LeadScoringPageState extends State<LeadScoringPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const _SectionTitle(icon: Icons.insights_rounded, title: 'Scoring result', subtitle: 'Model prediction based on the submitted signals.'),
+            const _SectionTitle(
+              icon: Icons.insights_rounded,
+              title: 'Scoring result',
+              subtitle: 'Model prediction based on the submitted signals.',
+            ),
             const SizedBox(height: 24),
             Center(
               child: SizedBox(
@@ -263,11 +308,21 @@ class _LeadScoringPageState extends State<LeadScoringPage> {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    CircularProgressIndicator(value: score / 100, strokeWidth: 14),
+                    CircularProgressIndicator(
+                      value: score / 100,
+                      strokeWidth: 14,
+                    ),
                     Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('$score', style: const TextStyle(fontSize: 58, fontWeight: FontWeight.w800, height: 1)),
+                        Text(
+                          '$score',
+                          style: const TextStyle(
+                            fontSize: 58,
+                            fontWeight: FontWeight.w800,
+                            height: 1,
+                          ),
+                        ),
                         const Text('/ 100', style: TextStyle(fontWeight: FontWeight.w600)),
                       ],
                     ),
@@ -276,9 +331,18 @@ class _LeadScoringPageState extends State<LeadScoringPage> {
               ),
             ),
             const SizedBox(height: 22),
-            Center(child: Chip(avatar: const Icon(Icons.flag_rounded, size: 18), label: Text('$priority priority'))),
+            Center(
+              child: Chip(
+                avatar: const Icon(Icons.flag_rounded, size: 18),
+                label: Text('$priority priority'),
+              ),
+            ),
             const SizedBox(height: 18),
-            LinearProgressIndicator(value: probability, minHeight: 10, borderRadius: BorderRadius.circular(10)),
+            LinearProgressIndicator(
+              value: probability,
+              minHeight: 10,
+              borderRadius: BorderRadius.circular(10),
+            ),
             const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -291,7 +355,10 @@ class _LeadScoringPageState extends State<LeadScoringPage> {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Theme.of(context).colorScheme.surfaceContainerHighest),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              ),
               child: Text(_priorityDescription(priority)),
             ),
             const SizedBox(height: 18),
@@ -323,14 +390,23 @@ class _Header extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Know which leads deserve attention.', style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, height: 1.15)),
+              Text(
+                'Know which leads deserve attention.',
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, height: 1.15),
+              ),
               SizedBox(height: 8),
-              Text('Use a lightweight machine-learning model to estimate conversion likelihood from CRM activity.'),
+              Text(
+                'Use a lightweight machine-learning model to estimate conversion likelihood from CRM activity.',
+              ),
             ],
           ),
         ),
         const SizedBox(width: 16),
-        FilledButton.tonalIcon(onPressed: onDemo, icon: Icon(Icons.auto_awesome), label: Text('Try demo')),
+        FilledButton.tonalIcon(
+          onPressed: onDemo,
+          icon: const Icon(Icons.auto_awesome),
+          label: const Text('Try demo'),
+        ),
       ],
     );
   }
@@ -348,7 +424,16 @@ class _SectionTitle extends StatelessWidget {
       children: [
         Icon(icon),
         const SizedBox(width: 12),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w750)), const SizedBox(height: 3), Text(subtitle)])),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w700)),
+              const SizedBox(height: 3),
+              Text(subtitle),
+            ],
+          ),
+        ),
       ],
     );
   }
