@@ -2,14 +2,12 @@ from pathlib import Path
 
 import joblib
 import pandas as pd
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 from app.schemas import LeadInput, LeadPrediction
 
-
 ROOT = Path(__file__).resolve().parents[1]
 MODEL_PATH = ROOT / "artifacts" / "lead_model.joblib"
-
 FEATURES = [
     "company_size",
     "website_visits",
@@ -21,30 +19,35 @@ FEATURES = [
 
 app = FastAPI(
     title="Smart Lead Scoring API",
-    version="0.1.0",
-    description="Predict sales lead conversion probability using a small ML baseline.",
+    version="1.0.0",
+    description="Predict sales lead conversion probability using a lightweight ML model.",
 )
 
-model = joblib.load(MODEL_PATH)
+
+def load_model():
+    if not MODEL_PATH.exists():
+        raise RuntimeError("Model artifact not found. Run: python -m model.train")
+    return joblib.load(MODEL_PATH)
+
+
+model = load_model()
 
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    return {"status": "ok"}
+    return {"status": "ok", "model": "loaded"}
 
 
 @app.post("/predict", response_model=LeadPrediction)
 def predict(lead: LeadInput) -> LeadPrediction:
-    frame = pd.DataFrame([lead.model_dump()])[FEATURES]
-    probability = float(model.predict_proba(frame)[0][1])
-    score = round(probability * 100)
+    try:
+        frame = pd.DataFrame([lead.model_dump()])[FEATURES]
+        probability = float(model.predict_proba(frame)[0][1])
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail="Prediction failed") from exc
 
-    if score >= 70:
-        priority = "High"
-    elif score >= 40:
-        priority = "Medium"
-    else:
-        priority = "Low"
+    score = round(probability * 100)
+    priority = "High" if score >= 70 else "Medium" if score >= 40 else "Low"
 
     return LeadPrediction(
         score=score,
